@@ -2,7 +2,7 @@ package spring5_webmvc_study.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,11 +19,11 @@ public class RegistController {
 	}
 
 	@PostMapping("/register/step2")
-	public String handlStep2(@RequestParam(value = "agree", defaultValue = "false") Boolean agree, Model model) {
+	public String handlStep2(@RequestParam(value = "agree", defaultValue = "false") Boolean agree, /*Model model*/ RegisterRequest registerRequest) {
 		if (!agree) {
 			return "register/step1";
 		}
-		model.addAttribute("registerRequest", new RegisterRequest());
+//		model.addAttribute("registerRequest", new RegisterRequest());
 		return "register/step2";
 	}
 
@@ -33,12 +33,16 @@ public class RegistController {
 	}
 
 	@PostMapping("/register/step3")
-	public String handlStep3(RegisterRequest regReq) {
-//		System.out.println(regReq);
+	public String handlStep3(RegisterRequest regReq, Errors errors) {
+		new RegisterRequestValidator().validate(regReq, errors);
+		if(errors.hasErrors())
+			return "register/step2";
+		
 		try {
 			memberRegisterService.regist(regReq);
 			return "register/step3";
 		} catch (DuplicateMemberException e) {
+			errors.rejectValue("email", "duplicate");
 			return "register/step2";
 		}
 	}
