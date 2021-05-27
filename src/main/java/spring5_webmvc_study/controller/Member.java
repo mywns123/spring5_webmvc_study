@@ -2,12 +2,20 @@ package spring5_webmvc_study.controller;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class Member {
 	private long id;
 	private String email;
+	@JsonIgnore 					// 둘중 하나만하면 가능2
 	private String password;
 	private String name;
+	// @JsonFormat(pattern = "yyyyMMddHHmmss")
 	private LocalDateTime registerDateTime;
+
+	public Member() {
+		// TODO Auto-generated constructor stub
+	}
 
 	public Member(String email, String password, String name, LocalDateTime registerDateTime) {
 		super();
